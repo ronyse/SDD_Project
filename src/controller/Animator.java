@@ -28,28 +28,20 @@ public class Animator implements Runnable {
     Color color;
     
     
-    
-    
-    
-    
-      
-    
-      
-    
-    
-      
-
+   
     @Override
     public void run() {
 
         while (running) {
             long startTime = System.currentTimeMillis();
 
-processCollisions();
+           
 
-            Main.gameData.update();
-            Main.gamePanel.gameRender();
-            Main.gamePanel.printScreen();
+            Main.gameData.update();                   
+            Main.gamePanel.gameRender();              
+            Main.gamePanel.printScreen();             
+            
+            processCollisions();
 
             long endTime = System.currentTimeMillis();
             int sleepTime = (int) (1.0 / FRAMES_PER_SECOND * 1000)
@@ -69,11 +61,7 @@ processCollisions();
 
     private synchronized void processCollisions() {
      int killed = Main.gameData.getKilledEnemies();
-                       
-
-     
-   
-        
+                              
         for (GameFigure friendFigure : Main.gameData.friendFigures) {
             Rectangle2D friendlyBox = ((GameFigure) friendFigure).getCollisionBox();
           for (GameFigure enemyFigure : Main.gameData.enemyFigures) {
@@ -102,10 +90,6 @@ processCollisions();
                     if(health > 0 && friendString.startsWith("model.Shooter")){
                            enemyCounter++;
                            
-                          
-                          
-                          //health = health - 25;
-                             
                       
                    
                   }

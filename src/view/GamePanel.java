@@ -2,15 +2,22 @@ package view;
 
 import controller.Main;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import model.GameFigure;
 import model.Missile;
@@ -35,6 +42,50 @@ public class GamePanel extends JPanel {
     // off screen rendering
     private Graphics2D g2;
     private Image dbImage = null; // double buffer image
+    private final Image bkgImage, newGameImage, startedImage;
+    private boolean gameStartedbkg,newGamebkg = false;
+    
+    private final String Gametitle ; 
+        
+    
+    public GamePanel(){
+        
+        Gametitle = "Space inavader"; 
+        
+        String imagePath = System.getProperty("user.dir");
+        String separator = System.getProperty("file.separator");
+        bkgImage = getImage(imagePath + separator + "ImagesFolder" + separator + "game1.jpg");
+        newGameImage = getImage(imagePath + separator + "ImagesFolder" + separator + "pressStart1.jpeg");
+        startedImage = getImage(imagePath + separator + "ImagesFolder" + separator + "backgroundImageMenu1.png");
+        
+         
+        
+    }
+    
+   
+    
+    
+    
+    /*@Override
+    public void paintComponent(Graphics g){
+        g.drawImage(bkgImage, 0, 0, null);
+    }*/
+    
+    /**
+     * getImage :- uses try catch clause to read a file and return if the file is an image
+     */
+    public static Image getImage(String fileName) {
+        Image image = null;
+        try {
+            image = ImageIO.read(new File(fileName));
+        } catch (IOException ioe) {
+            System.out.println("Error: Cannot open image:" + fileName);
+            JOptionPane.showMessageDialog(null, "Error: Cannot open image:" + fileName);
+        }
+        return image;
+    }
+    
+    
 
     public void gameRender() {
         width = getSize().width;
@@ -55,7 +106,30 @@ public class GamePanel extends JPanel {
          if(Main.animator.enemyCounter >= 500){
          g2.setBackground(color4);
          }
-
+         
+         g2.drawImage(bkgImage, 0, 0, null);
+         
+         
+         Font fnt0 = new Font("arial", Font.BOLD, 50);
+		g2.setFont(fnt0);
+		g2.setColor(Color.red);
+		g2.drawString(Gametitle,GamePanel.WIDTH / 2 + 230, 100);
+         
+         
+         
+         
+         if(newGamebkg){
+            g2.clearRect(0, 0, width, height);
+            g2.setBackground(color3);
+            g2.drawImage(newGameImage, 0, 0,null);
+         }
+         else if(gameStartedbkg){
+            g2.clearRect(0, 0, width, height);
+            g2.setBackground(color3);
+            g2.drawImage(startedImage, 0, 0,null);
+         }
+         
+                  
         if (Main.animator.running) {
                         
             synchronized (Main.gameData.enemyFigures) {
@@ -92,7 +166,9 @@ public class GamePanel extends JPanel {
             System.out.println("Graphics error: " + e);
         }
     }
-public void NewGame() {
+public void NewGame() { 
+    gameStartedbkg = false;
+    newGamebkg = true;
     gameStart = false;    
     addButton.setEnabled(true);
         quitButton.setEnabled(true);
@@ -114,7 +190,10 @@ public void NewGame() {
 
     }
 public void StartGame(){
-   gameStart = true;
+    newGamebkg = false;
+    gameStartedbkg = true;
+    
+    gameStart = true;
     
     ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 exec.scheduleAtFixedRate(new Runnable() {
